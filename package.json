@@ -1,0 +1,36 @@
+{
+  "name": "line-bot-expressjs",
+  "version": "1.0.0",
+  "description": "LINE Bot แบบเบาๆ โดยใช้ ExpressJS และ LINE Messaging API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cherdsak-kh/line-bot-expressjs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cherdsak-kh/line-bot-expressjs/issues"
+  },
+  "homepage": "https://github.com/cherdsak-kh/line-bot-expressjs#readme",
+  "dependencies": {
+    "@line/bot-sdk": "^11.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@ngrok/ngrok": "^1.7.0",
+    "nodemon": "^3.1.14"
+  }
+}
