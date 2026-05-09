@@ -40,7 +40,7 @@ const handleEvent = async (event) => {
     replyText = 'วิธีใช้งานเบื้องต้น:\n- พิมพ์ "สวัสดี" เพื่อทักทาย\n- พิมพ์อะไรก็ได้ ผมจะสะท้อนคำพูดของคุณกลับไป (Echo)';
   } else {
     // Echo back the original text
-    replyText = event.message.text;
+    replyText = `คุณพิมพ์: ${event.message.text}`;
   }
 
   // Use reply API

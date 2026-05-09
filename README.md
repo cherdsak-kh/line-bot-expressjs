@@ -5,7 +5,7 @@
 ## ✨ ฟีเจอร์หลัก (Features)
 - 💬 **LINE Messaging API**: รองรับการรับ-ส่งข้อความและ Event ต่างๆ จากแพลตฟอร์ม LINE
 - ⚡ **Express.js**: ทำงานรวดเร็ว ยืดหยุ่น และจัดการ Routing ได้ง่าย
-- 🌐 **ngrok Integration**: ฝังไลบรารี `@ngrok/ngrok` มาให้ในตัว สามารถรันคำสั่งเดียวได้ URL Public สำหรับเอาไปใส่เป็น Webhook ทันที ไม่ต้องติดตั้งโปรแกรมแยก
+- 🌐 **ngrok Manual Mode**: รองรับการใช้งาน ngrok แบบแยกผ่าน Command Line เพื่อสร้าง Public URL สำหรับ Webhook
 - 📖 **Swagger UI**: มีระบบสร้าง API Documentation แบบอัตโนมัติ (ดูได้ที่ `/api-docs`)
 - 🔄 **Auto-Reload**: ใช้ `nodemon` ช่วยให้เซิร์ฟเวอร์โหลดใหม่ทันทีเมื่อมีการแก้ไขไฟล์โค้ด
 ---
@@ -13,6 +13,8 @@
 ## 🛠️ โครงสร้างโปรเจกต์ (Project Structure)
 ```text
 line-bot-expressjs/
+├── docs/
+│   └── RUNNING_NGROK_MANUALLY.md # คู่มือรัน ngrok แบบแยก
 ├── src/
 │   ├── config.js                # โหลดและจัดการตัวแปร Environment (.env)
 │   ├── handlers.js              # ตรรกะจัดการข้อความ (Event Handlers) จากผู้ใช้
@@ -42,7 +44,7 @@ npm install
 ```
 
 ### 2. ตั้งค่าไฟล์ Environment
-สร้างไฟล์ชื่อ `.env` ไว้ที่โฟลเดอร์หลักของโปรเจกต์ แล้วกำหนดค่าต่อไปนี้ (นำข้อมูลมาจาก LINE Developers Console และ ngrok Dashboard):
+สร้างไฟล์ชื่อ `.env` ไว้ที่โฟลเดอร์หลักของโปรเจกต์ แล้วกำหนดค่าต่อไปนี้ (นำข้อมูลมาจาก LINE Developers Console):
 
 ```env
 PORT=3000
@@ -50,20 +52,27 @@ PORT=3000
 # LINE Developers Console
 LINE_CHANNEL_ACCESS_TOKEN=ใส่_Channel_Access_Token_ของคุณที่นี่
 LINE_CHANNEL_SECRET=ใส่_Channel_Secret_ของคุณที่นี่
-
-# ngrok Configuration
-ENABLE_NGROK=true
-NGROK_AUTHTOKEN=ใส่_AuthToken_ของ_ngrok_ของคุณที่นี่
 ```
 
 ### 3. รันเซิร์ฟเวอร์
 ```bash
 npm run dev
 ```
-เซิร์ฟเวอร์จะถูกรันขึ้นมาที่พอร์ต 3000 พร้อมทั้งเรียกใช้ ngrok ให้อัตโนมัติ (หากตั้งค่า `ENABLE_NGROK=true`) หน้าจอ Terminal จะแสดง Webhook URL ออกมาให้เห็น (ตัวอย่างเช่น `https://1234-abcd.ngrok-free.app/webhook`)
+เซิร์ฟเวอร์จะถูกรันขึ้นมาที่พอร์ต 3000 สำหรับรับ Webhook ที่ endpoint `/webhook`
 
-### 4. เชื่อมต่อ Webhook
-ให้นำ Webhook URL ที่ได้จากขั้นตอนที่ 3 ไปกรอกลงใน **LINE Developers Console** > เมนู **Messaging API** > **Webhook URL** จากนั้นกด `Verify` และอย่าลืมกดสวิตช์เปิด `Use webhook`
+### 4. รัน ngrok แบบแยก
+เปิดอีก Terminal หนึ่งแล้วรัน:
+
+```bash
+npx ngrok http 3000
+```
+
+จากนั้นนำ URL ที่ได้มาต่อท้าย `/webhook` เช่น `https://1234-abcd.ngrok-free.app/webhook`
+
+> ดูคู่มือแบบละเอียดได้ที่ `docs/RUNNING_NGROK_MANUALLY.md`
+
+### 5. เชื่อมต่อ Webhook
+ให้นำ Webhook URL จากขั้นตอนที่ 4 ไปกรอกลงใน **LINE Developers Console** > เมนู **Messaging API** > **Webhook URL** จากนั้นกด `Verify` และอย่าลืมกดสวิตช์เปิด `Use webhook`
 
 ---
 
@@ -72,7 +81,7 @@ npm run dev
 ระบบเริ่มต้น (Default) ถูกตั้งค่าไว้ดังนี้:
 - พิมพ์คำว่า **"สวัสดี"** หรือ **"hello"** -> บอทจะกล่าวต้อนรับ
 - พิมพ์คำว่า **"help"** -> บอทจะแสดงคำแนะนำ
-- ส่ง**สติกเกอร์** -> บอทจะแจ้งเตือนว่ายังไม่รองรับรูปภาพ
+- ส่ง **สติกเกอร์** -> บอทจะแจ้งเตือนว่ายังไม่รองรับรูปภาพ
 - พิมพ์ข้อความอื่นๆ -> บอทจะทำหน้าที่เป็น Echo ตอบกลับข้อความเดิมของคุณ
 
 คุณสามารถเข้าไปแก้ไขตรรกะการตอบกลับเหล่านี้ได้ที่ไฟล์ `src/handlers.js`

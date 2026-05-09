@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LINE Bot Project Info</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f7fb; margin: 0; padding: 24px; color: #1f2937; }
+    .card { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    h1 { margin-top: 0; color: #0f172a; }
+    p { margin: 8px 0; }
+    .label { font-weight: 700; }
+    .button { display: inline-block; margin-top: 14px; text-decoration: none; background: #2563eb; color: #fff; padding: 10px 14px; border-radius: 8px; }
+    .button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>LINE Bot with Express.js</h1>
+    <p>ข้อมูลเบื้องต้นของโปรเจกต์สำหรับรายวิชา SCS334</p>
+    <p><span class="label">ชื่อนักศึกษา:</span> {{STUDENT_NAME}}</p>
+    <p><span class="label">รหัสนักศึกษา:</span> {{STUDENT_ID}}</p>
+    <p><span class="label">Webhook Endpoint:</span> /webhook</p>
+    <a class="button" href="{{SWAGGER_URL}}" target="_blank" rel="noopener noreferrer">เปิด Swagger UI</a>
+  </div>
+</body>
+</html>

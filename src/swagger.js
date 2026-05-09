@@ -12,7 +12,7 @@ const options = {
     servers: [
       {
         url: `http://localhost:${config.port}`,
-        description: 'Local Development Server',
+        description: 'SCS334',
       },
     ],
   },
