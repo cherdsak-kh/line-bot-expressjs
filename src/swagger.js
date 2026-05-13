@@ -5,18 +5,18 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'LINE Bot Webhook API',
+      title: 'SCS334 - API DOCS (Cherdsak Kh.)',
       version: '1.0.0',
-      description: 'API documentation for LINE Bot Webhook endpoint',
+      description: 'เอกสารคู่มือ API สำหรับรายวิชา SCS334',
     },
-    servers: [
-      {
-        url: `http://localhost:${config.port}`,
-        description: 'SCS334',
-      },
-    ],
+    // servers: [
+    //   {
+    //     url: `http://localhost:${config.port}`,
+    //     description: 'SCS334',
+    //   },
+    // ],
   },
-  apis: ['./src/index.js', './src/handlers.js'], // Files containing annotations
+  apis: ['./src/index.js', './src/handlers.js'],
 };
 
 const specs = swaggerJsdoc(options);
