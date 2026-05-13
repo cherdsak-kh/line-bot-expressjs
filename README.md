@@ -67,8 +67,6 @@ npx ngrok http 3000
 
 จากนั้นนำ URL ที่ได้มาต่อท้าย `/webhook` เช่น `https://1234-abcd.ngrok-free.app/webhook`
 
-> ดูคู่มือแบบละเอียดได้ที่ `docs/RUNNING_NGROK_MANUALLY.md`
-
 ### 5. เชื่อมต่อ Webhook
 ให้นำ Webhook URL จากขั้นตอนที่ 4 ไปกรอกลงใน **LINE Developers Console** > เมนู **Messaging API** > **Webhook URL** จากนั้นกด `Verify` และอย่าลืมกดสวิตช์เปิด `Use webhook`
 
