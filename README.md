@@ -13,8 +13,6 @@
 ## 🛠️ โครงสร้างโปรเจกต์ (Project Structure)
 ```text
 line-bot-expressjs/
-├── docs/
-│   └── RUNNING_NGROK_MANUALLY.md # คู่มือรัน ngrok แบบแยก
 ├── src/
 │   ├── config.js                # โหลดและจัดการตัวแปร Environment (.env)
 │   ├── handlers.js              # ตรรกะจัดการข้อความ (Event Handlers) จากผู้ใช้
