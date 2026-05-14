@@ -51,10 +51,10 @@ app.get('/', (req, res) => {
  *               properties:
  *                 studentName:
  *                   type: string
- *                   example: "เชิดศักดิ์ คำไล้"
+ *                   example: "First_Name Last_Name"
  *                 studentId:
  *                   type: string
- *                   example: "67222420006"
+ *                   example: "1234567890"
  */
 app.get('/student', (req, res) => {
   res.json({
