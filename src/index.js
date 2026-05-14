@@ -33,6 +33,36 @@ app.get('/', (req, res) => {
   res.send(html);
 });
 
+// Setup Student Route
+/**
+ * @swagger
+ * /student:
+ *   get:
+ *     summary: ข้อมูลนักศึกษา
+ *     tags: [Student]
+ *     description: ตอบกลับข้อมูลของนักศึกษาในรูปแบบ JSON
+ *     responses:
+ *       200:
+ *         description: สำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 studentName:
+ *                   type: string
+ *                   example: "เชิดศักดิ์ คำไล้"
+ *                 studentId:
+ *                   type: string
+ *                   example: "67222420006"
+ */
+app.get('/student', (req, res) => {
+  res.json({
+    studentName: 'เชิดศักดิ์ คำไล้',
+    studentId: '67222420006',
+  });
+});
+
 // Setup Webhook Route
 // Note: LINE SDK middleware automatically parses the request body and verifies the signature.
 // Therefore, we do NOT use express.json() before this route.
@@ -60,6 +90,6 @@ app.post('/webhook', line.middleware(config.lineConfig), (req, res) => {
 
 // Start the server
 app.listen(config.port, () => {
-  console.log(`\n🚀 Server is running on port ${config.port}`);
+  console.log(`\n🚀 Server is running at http://localhost:${config.port}`);
   console.log(`📄 Swagger documentation available at http://localhost:${config.port}/api-docs`, '\n');
 });
