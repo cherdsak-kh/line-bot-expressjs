@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 
 # Local only
 docs/
+_planning/
