@@ -33,14 +33,14 @@ app.get('/', (req, res) => {
   res.send(html);
 });
 
-// Setup Student Route
+// Setup Personal Info Route
 /**
  * @swagger
- * /student:
+ * /personal-info:
  *   get:
- *     summary: ข้อมูลนักศึกษา
- *     tags: [Student]
- *     description: ตอบกลับข้อมูลของนักศึกษาในรูปแบบ JSON
+ *     summary: ข้อมูลส่วนตัวนักศึกษา
+ *     tags: [Personal Info]
+ *     description: ตอบกลับข้อมูลส่วนตัวนักศึกษาในรูปแบบ JSON
  *     responses:
  *       200:
  *         description: สำเร็จ
@@ -49,17 +49,33 @@ app.get('/', (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 studentName:
+ *                 firstName:
  *                   type: string
- *                   example: "First_Name Last_Name"
+ *                   example: "ชื่อ"
+ *                 lastName:
+ *                   type: string
+ *                   example: "สกุล"
  *                 studentId:
  *                   type: string
  *                   example: "1234567890"
+ *                 major:
+ *                   type: string
+ *                   example: "สาขา"
+ *                 faculty:
+ *                   type: string
+ *                   example: "คณะ"
+ *                 university:
+ *                   type: string
+ *                   example: "มหาวิทยาลัย"
  */
-app.get('/student', (req, res) => {
+app.get('/personal-info', (req, res) => {
   res.json({
-    studentName: 'เชิดศักดิ์ คำไล้',
+    firstName: 'เชิดศักดิ์',
+    lastName: 'คำไล้',
     studentId: '67222420006',
+    major: 'วิทยาการคอมพิวเตอร์',
+    faculty: 'คณะวิทยาศาสตร์และเทคโนโลยี',
+    university: 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์',
   });
 });
 
