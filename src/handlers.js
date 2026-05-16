@@ -76,40 +76,87 @@ const handleEvent = async (event) => {
         replyText = 'วิธีใช้งานเบื้องต้น:\n- พิมพ์ "สวัสดี" เพื่อทักทาย\n- พิมพ์ถามอะไรก็ได้ ผมจะใช้ AI ตอบให้\n- ส่งรูปภาพมา ผมก็จะช่วยอธิบายรูปให้ได้ครับ';
       } else {
         // ใช้ Gemini ในการตอบกลับแทน Echo
-        const response = await ai.models.generateContent({
-          model: 'gemini-flash-latest',
-          contents: userMessage,
-        });
-        replyText = response.text;
+        try {
+          const response = await ai.models.generateContent({
+            model: 'gemini-flash-latest',
+            contents: userMessage,
+          });
+          replyText = response.text;
+        } catch (error) {
+          console.error('⚠️ Gemini API Error:', error.message || error);
+          
+          // ดักจับ Error 429 (Rate Limit / Quota Exceeded)
+          if (error.status === 429) {
+            replyText = 'ขออภัยครับ ตอนนี้ระบบ AI คิวเต็ม (โควต้าฟรีหมดชั่วคราว) ⏳ กรุณาลองใหม่อีกครั้งในภายหลังครับ 🙏';
+          } else {
+            replyText = 'ขออภัยครับ เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI กรุณาลองใหม่อีกครั้งครับ 😅';
+          }
+        }
       }
     } else if (event.message.type === 'image') {
-      // ดาวน์โหลดรูปภาพจาก LINE และดึงมาทั้ง Base64 และ Buffer
-      const imageContent = await downloadLineContent(event.message.id);
-      
-      const fileName = `images/${event.message.id}.jpg`;
-      contentToSave = `[Image: ${fileName}]`;
-      
-      // อัปโหลดไฟล์ขึ้น Supabase Storage แบบ Asynchronous
-      supabase.storage.from('SCS334_STORAGE').upload(fileName, imageContent.buffer, {
-        contentType: 'image/jpeg',
-        upsert: true
-      }).then(({ error }) => {
-        if (error) console.error('⚠️ Supabase Storage Upload Error:', error);
-      });
-      
-      // ส่งให้ Gemini วิเคราะห์รูปภาพ
-      const response = await ai.models.generateContent({
-        model: 'gemini-flash-latest',
-        contents: [
-          { inlineData: imageContent.inlineData },
-          "ช่วยอธิบายรูปภาพนี้ให้หน่อยครับ แต่ถ้ารูปภาพนี้เป็นรูปสัตว์ ให้บอกแค่ชื่อสัตว์อย่างเดียวสั้นๆ ไม่ต้องอธิบายยาว"
-        ]
-      });
-      replyText = `ส่งรูปภาพสำเร็จ! | ${response.text}`;
+      const targetId = event.source.userId || event.source.groupId || event.source.roomId;
+
+      // ตอบกลับทันที (Reply) ว่าได้รับรูปภาพแล้ว เพื่อไม่ให้ผู้ใช้ต้องรอ
+      replyText = 'ส่งรูปภาพสำเร็จ! กำลังให้ AI วิเคราะห์ รอสักครู่นะครับ 📸';
       replyMessages = [
-        { type: 'text', text: 'ส่งรูปภาพสำเร็จ! 📸' },
-        { type: 'text', text: response.text }
+        { type: 'text', text: replyText }
       ];
+      contentToSave = `[Image Received: ${event.message.id}]`;
+
+      // แยกการทำงานที่ใช้เวลานาน (ดาวน์โหลด, อัปโหลด, วิเคราะห์ AI) ไปทำเป็น Background Task
+      (async () => {
+        try {
+          // ดาวน์โหลดรูปภาพจาก LINE และดึงมาทั้ง Base64 และ Buffer
+          const imageContent = await downloadLineContent(event.message.id);
+          
+          const fileName = `images/${event.message.id}.jpg`;
+          
+          // อัปโหลดไฟล์ขึ้น Supabase Storage แบบ Asynchronous
+          supabase.storage.from('SCS334_STORAGE').upload(fileName, imageContent.buffer, {
+            contentType: 'image/jpeg',
+            upsert: true
+          }).then(({ error }) => {
+            if (error) console.error('⚠️ Supabase Storage Upload Error:', error);
+          });
+          
+          // ส่งให้ Gemini วิเคราะห์รูปภาพ
+          const response = await ai.models.generateContent({
+            model: 'gemini-flash-latest',
+            contents: [
+              { inlineData: imageContent.inlineData },
+              "ช่วยอธิบายรูปภาพนี้ให้หน่อยครับ แต่ถ้ารูปภาพนี้เป็นรูปสัตว์ ให้บอกแค่ชื่อสัตว์อย่างเดียวสั้นๆ ไม่ต้องอธิบายยาว"
+            ]
+          });
+
+          // ส่งคำตอบจาก AI กลับไปหาผู้ใช้ด้วยคำสั่ง Push Message
+          if (targetId) {
+            await client.pushMessage({
+              to: targetId,
+              messages: [{ type: 'text', text: response.text }]
+            });
+
+            // บันทึก Log ประวัติการตอบกลับของ AI (Push Message) ลง Supabase ด้วย
+            supabase.from('messages').insert([{
+              user_id: event.source.userId || 'unknown',
+              message_id: `push-${Date.now()}`,
+              type: 'text',
+              content: `[AI Analysis for ${event.message.id}]`,
+              reply_token: 'push_message',
+              reply_content: response.text,
+            }]).then(({ error }) => {
+              if (error) console.error('⚠️ Supabase Error (Push Message):', error);
+            });
+          }
+        } catch (error) {
+          console.error('⚠️ Background Image Processing Error:', error);
+          if (targetId) {
+            await client.pushMessage({
+              to: targetId,
+              messages: [{ type: 'text', text: 'ขออภัยครับ เกิดข้อผิดพลาดขณะให้ AI วิเคราะห์รูปภาพ' }]
+            }).catch(e => console.error('Failed to push error message:', e));
+          }
+        }
+      })();
     } else if (event.message.type === 'sticker') {
       contentToSave = `[Sticker message]`;
       replyText = 'ขอบคุณสำหรับสติ๊กเกอร์ครับ 😊';
