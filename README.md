@@ -59,7 +59,7 @@ LINE_CHANNEL_SECRET=ใส่_Channel_Secret_ของคุณที่นี�
 
 # Supabase Credentials
 SUPABASE_URL=ใส่_Supabase_URL_ของคุณที่นี่
-SUPABASE_KEY=ใส่_Supabase_Anon_Key_ของคุณที่นี่
+SUPABASE_KEY=ใส่_Supabase_Service_Role_Key_ของคุณที่นี่
 
 # Gemini API
 GEMINI_API_KEY=ใส่_Gemini_API_Key_ของคุณที่นี่
