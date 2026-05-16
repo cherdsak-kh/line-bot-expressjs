@@ -51,6 +51,7 @@ npm install
 สร้างไฟล์ชื่อ `.env` ไว้ที่โฟลเดอร์หลักของโปรเจกต์ แล้วกำหนดค่าต่อไปนี้ (นำข้อมูลมาจาก LINE Developers Console):
 
 ```env
+# Server Configuration
 PORT=3000
 
 # LINE Developers Console
