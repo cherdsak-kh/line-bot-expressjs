@@ -6,6 +6,9 @@ const { GoogleGenAI } = require('@google/genai');
 // Create GenAI client
 const ai = new GoogleGenAI({ apiKey: config.gemini.apiKey });
 
+// In-Memory state for storing user's selected Gemini model
+const userModels = new Map();
+
 // Create a new LINE SDK clients.
 const client = new line.messagingApi.MessagingApiClient({
   channelAccessToken: config.lineConfig.channelAccessToken,
@@ -70,15 +73,42 @@ const handleEvent = async (event) => {
       contentToSave = userMessage;
 
       // Simple command routing
-      if (userMessage.toLowerCase() === 'สวัสดี' || userMessage.toLowerCase() === 'hello') {
+      if (userMessage.toLowerCase() === '/model') {
+        replyMessages = [
+          {
+            type: 'text',
+            text: 'กรุณาเลือกโมเดล Gemini ที่ต้องการใช้งานครับ:',
+            quickReply: {
+              items: [
+                { type: 'action', action: { type: 'message', label: 'Gemini 3 Flash', text: '/setmodel gemini-3.0-flash' } },
+                { type: 'action', action: { type: 'message', label: 'Gemini 3.1 FlashLite', text: '/setmodel gemini-3.1-flash-lite' } },
+                { type: 'action', action: { type: 'message', label: 'Gemini 2.5 Flash', text: '/setmodel gemini-2.5-flash' } },
+                { type: 'action', action: { type: 'message', label: 'Gemini 2.5 FlashLite', text: '/setmodel gemini-2.5-flash-lite' } }
+              ]
+            }
+          }
+        ];
+        replyText = 'แสดงเมนูเลือกโมเดล';
+      } else if (userMessage.toLowerCase().startsWith('/setmodel ')) {
+        const selectedModel = userMessage.split(' ')[1];
+        const userId = event.source.userId;
+        if (userId) {
+          userModels.set(userId, selectedModel);
+        }
+        replyText = `ตั้งค่าให้ใช้โมเดล ${selectedModel} เรียบร้อยแล้วครับ!`;
+      } else if (userMessage.toLowerCase() === '/checkmodel' || userMessage.toLowerCase() === '/currentmodel') {
+        const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
+        replyText = `ตอนนี้คุณกำลังใช้งานโมเดล: ${currentModel} ครับ`;
+      } else if (userMessage.toLowerCase() === 'สวัสดี' || userMessage.toLowerCase() === 'hello') {
         replyText = 'สวัสดีครับ ยินดีต้อนรับสู่ LINE Bot ของเรา!';
       } else if (userMessage.toLowerCase() === 'help') {
-        replyText = 'วิธีใช้งานเบื้องต้น:\n- พิมพ์ "สวัสดี" เพื่อทักทาย\n- พิมพ์ถามอะไรก็ได้ ผมจะใช้ AI ตอบให้\n- ส่งรูปภาพมา ผมก็จะช่วยอธิบายรูปให้ได้ครับ';
+        replyText = 'วิธีใช้งานเบื้องต้น:\n- พิมพ์ "สวัสดี" เพื่อทักทาย\n- พิมพ์ถามอะไรก็ได้ ผมจะใช้ AI ตอบให้\n- ส่งรูปภาพมา ผมก็จะช่วยอธิบายรูปให้ได้ครับ\n- พิมพ์ "/model" เพื่อเลือกโมเดล AI\n- พิมพ์ "/checkmodel" เพื่อดูโมเดลที่กำลังใช้งานอยู่';
       } else {
         // ใช้ Gemini ในการตอบกลับแทน Echo
+        const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
         try {
           const response = await ai.models.generateContent({
-            model: 'gemini-flash-latest',
+            model: currentModel,
             contents: userMessage,
           });
           replyText = response.text;
@@ -120,8 +150,9 @@ const handleEvent = async (event) => {
           });
           
           // ส่งให้ Gemini วิเคราะห์รูปภาพ
+          const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
           const response = await ai.models.generateContent({
-            model: 'gemini-flash-latest',
+            model: currentModel,
             contents: [
               { inlineData: imageContent.inlineData },
               "ช่วยอธิบายรูปภาพนี้ให้หน่อยครับ แต่ถ้ารูปภาพนี้เป็นรูปสัตว์ ให้บอกแค่ชื่อสัตว์อย่างเดียวสั้นๆ ไม่ต้องอธิบายยาว"
