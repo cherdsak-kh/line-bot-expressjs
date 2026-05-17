@@ -80,7 +80,7 @@ const handleEvent = async (event) => {
             text: 'กรุณาเลือกโมเดล Gemini ที่ต้องการใช้งานครับ:',
             quickReply: {
               items: [
-                { type: 'action', action: { type: 'message', label: 'Gemini 3 Flash', text: '/setmodel gemini-3.0-flash' } },
+                { type: 'action', action: { type: 'message', label: 'Gemini 3 Flash', text: '/setmodel gemini-3-flash-preview' } },
                 { type: 'action', action: { type: 'message', label: 'Gemini 3.1 FlashLite', text: '/setmodel gemini-3.1-flash-lite' } },
                 { type: 'action', action: { type: 'message', label: 'Gemini 2.5 Flash', text: '/setmodel gemini-2.5-flash' } },
                 { type: 'action', action: { type: 'message', label: 'Gemini 2.5 FlashLite', text: '/setmodel gemini-2.5-flash-lite' } }
