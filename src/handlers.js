@@ -99,7 +99,7 @@ const handleEvent = async (event) => {
         }
         replyText = `ตั้งค่าให้ใช้โมเดล ${selectedModel} เรียบร้อยแล้วครับ!`;
       } else if (userMessage.toLowerCase() === '/checkmodel' || userMessage.toLowerCase() === '/currentmodel') {
-        const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
+        const currentModel = userModels.get(event.source.userId) || 'gemini-3.1-flash-lite';
         replyText = `ตอนนี้คุณกำลังใช้งานโมเดล: ${currentModel} ครับ`;
       } else if (userMessage.toLowerCase() === 'สวัสดี' || userMessage.toLowerCase() === 'hello') {
         replyText = 'สวัสดีครับ ยินดีต้อนรับสู่ LINE Bot ของเรา!';
@@ -107,7 +107,7 @@ const handleEvent = async (event) => {
         replyText = 'วิธีใช้งานเบื้องต้น:\n- พิมพ์ "สวัสดี" เพื่อทักทาย\n- พิมพ์ถามอะไรก็ได้ ผมจะใช้ AI ตอบให้\n- ส่งรูปภาพมา ผมก็จะช่วยอธิบายรูปให้ได้ครับ\n- พิมพ์ "/model" เพื่อเลือกโมเดล AI\n- พิมพ์ "/checkmodel" เพื่อดูโมเดลที่กำลังใช้งานอยู่';
       } else {
         // ใช้ Gemini ในการตอบกลับแทน Echo
-        const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
+        const currentModel = userModels.get(event.source.userId) || 'gemini-3.1-flash-lite';
         try {
           const response = await ai.models.generateContent({
             model: currentModel,
@@ -152,7 +152,7 @@ const handleEvent = async (event) => {
           });
           
           // ส่งให้ Gemini วิเคราะห์รูปภาพ
-          const currentModel = userModels.get(event.source.userId) || 'gemini-flash-latest';
+          const currentModel = userModels.get(event.source.userId) || 'gemini-3.1-flash-lite';
           const response = await ai.models.generateContent({
             model: currentModel,
             contents: [
